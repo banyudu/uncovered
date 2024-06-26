@@ -1,9 +1,13 @@
-# ts cli
+# uncovered
 
-Typescript cli starter
+Sort vitest coverage by uncovered lines.
+
+This utility parses `coverage/coverage-summary.json` file and sort files by uncovered lines to help you find the most **uncovered** file.
 
 ## Usage
 
 ```bash
-pnpm create @banyudu/create-ts-cli
+# in the project dir
+$ npx vitest --coverage
+$ npx uncovered
 ```
