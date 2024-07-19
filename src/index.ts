@@ -2,18 +2,24 @@ import path from 'path'
 import fs from 'fs'
 import findRoot from 'find-root'
 import { Table } from 'console-table-printer'
+import capitalize from 'lodash/capitalize'
 
-export default async function main() {
+export type UncoveredMode = 'lines' | 'branches' | 'functions' | 'statements'
+
+export default async function main(mode: UncoveredMode = 'lines') {
   const rootDir = findRoot(process.cwd())
   const coverageFile = path.join(rootDir, 'coverage', 'coverage-summary.json')
   try {
     const coverage = JSON.parse(fs.readFileSync(coverageFile, 'utf-8'))
     const keys = Object.keys(coverage)
+
     const sortedKeys = keys.sort((a, b) => {
-      const uncoveredA = coverage[a].lines.total - coverage[a].lines.covered
-      const uncoveredB = coverage[b].lines.total - coverage[b].lines.covered
+      const uncoveredA = coverage[a][mode].total - coverage[a][mode].covered
+      const uncoveredB = coverage[b][mode].total - coverage[b][mode].covered
       return uncoveredA - uncoveredB
     })
+
+    const lastColName = `Uncovered ${capitalize(mode)}`
 
     const p = new Table({
       columns: [
@@ -22,7 +28,7 @@ export default async function main() {
         { name: 'Branch' },
         { name: 'Funcs' },
         { name: 'Lines' },
-        { name: 'Uncovered Line', alignment: 'right' },
+        { name: lastColName, alignment: 'right' },
       ],
     });
     sortedKeys.forEach((key) => {
@@ -32,16 +38,16 @@ export default async function main() {
       const branch = (record.branches.pct)
       const funcs = (record.functions.pct)
       const lines = record.lines.pct
-      const uncovered = record.lines.total - record.lines.covered
+      const uncovered = record[mode].total - record[mode].covered
       // return [key, stmts, branch, funcs, decorate(lines, `${lines} | ${uncovered}`)]
-      const color = lines < 50 ? 'red' : 'green'
+      const color = record[mode].pct < 50 ? 'red' : 'green'
       p.addRow({
         File: relativePath,
         Stmts: stmts,
         Branch: branch,
         Funcs: funcs,
         Lines: lines,
-        'Uncovered Line': (uncovered)
+        [lastColName]: (uncovered)
       }, { color })
     })
 
