@@ -1,6 +1,6 @@
 {
   "name": "uncovered",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "List sorted uncovered files in a project",
   "type": "module",
   "types": "lib/index.d.ts",
