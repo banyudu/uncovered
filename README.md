@@ -10,4 +10,5 @@ This utility parses `coverage/coverage-summary.json` file and sort files by unco
 # in the project dir
 $ npx vitest --coverage
 $ npx uncovered
+$ npx uncovered --mode=functions # sort by uncovered functions, valid options are lines/branches/functions/statements
 ```
